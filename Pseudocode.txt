@@ -1,0 +1,207 @@
+Pseudocode:
+
+START PROGRAM
+
+Create the Community Food Pantry Flow Tracker graphical interface
+
+Create five food category input sections:
+  Canned Goods - vegetables, soups, beans, fruits, canned meals
+  Meat - beef, chicken, pork, fish, packaged meats
+  Frozen Goods - frozen meals, vegetables, fruits, breads
+  Refrigerated Goods - milk, eggs, cheese, yogurt, chilled foods
+  Dry Goods - rice, pasta, cereal, flour, beans, boxed foods
+
+For each category:
+  Create a Donated input field
+  Create a Given Out input field
+
+Create buttons for:
+  Calculate Daily Totals
+  Save Daily Record
+  Calculate 7-Day Projection
+  Clear Form
+
+Create output areas for:
+  Daily donated total
+  Daily given-out total
+  Daily net movement
+  Highest-demand category
+  Donation coverage percentage
+  Donations by Food Type pie chart
+  Items Given Out by Food Type pie chart
+  Seven-day projected donations
+  Seven-day projected distribution
+  Seven-day projected net movement
+
+FUNCTION Calculate Daily Totals
+  Disable the Calculate button
+
+  TRY
+    FOR each food category
+      Read the Donated value
+      Read the Given Out value
+
+      IF either field is blank
+        RAISE ValueError
+      END IF
+
+      Convert both values to integers
+
+      IF either value is negative
+        RAISE ValueError
+      END IF
+
+      Store donated, given out, and category net movement
+    END FOR
+
+    Calculate total items donated
+    Calculate total items given to the public
+    Calculate net movement = total donated - total given
+    Find the category with the highest number of items given out
+
+    IF total donated is greater than zero
+      FOR each category
+        Calculate category donation percentage
+        category donated / total donated * 100
+      END FOR
+      Display Donations by Food Type pie chart
+    ELSE
+      Display no donations recorded message in donation chart area
+    END IF
+
+    IF total given is greater than zero
+      FOR each category
+        Calculate category distribution percentage
+        category given / total given * 100
+      END FOR
+      Display Items Given Out by Food Type pie chart
+      Calculate donation coverage = total donated / total given * 100
+    ELSE
+      Display no distribution recorded message in distribution chart area
+      Display coverage as not applicable
+    END IF
+
+    Store the valid daily results
+    Display all daily statistics
+
+  EXCEPT ValueError
+    Clear the invalid calculated state
+    Reset both pie charts
+    Display a useful message explaining the invalid input
+
+  EXCEPT unexpected Exception
+    Stop the daily calculation safely
+    Clear the invalid calculated state
+    Reset both pie charts
+    Display an unexpected-error message
+
+  FINALLY
+    Re-enable the Calculate button
+    Update the status area
+
+  END TRY
+END FUNCTION
+
+
+FUNCTION Save Daily Record
+  Disable the Save button
+  Set file handle to NONE
+
+  TRY
+    IF no valid daily calculation exists
+      RAISE ValueError
+    END IF
+
+    Determine whether pantry_records.csv already exists
+    Open pantry_records.csv in append mode
+
+    IF file is new or empty
+      Write CSV column headings
+    END IF
+
+    Write today's date
+    Write donated and given-out totals for every category
+    Write daily total donated
+    Write daily total given out
+    Write daily net movement
+    Write highest-demand category
+    Write donation coverage percentage
+    Display a save-success message
+
+  EXCEPT ValueError
+    Tell the user to calculate valid daily totals before saving
+
+  EXCEPT OSError
+    Tell the user the file could not be written
+
+  EXCEPT unexpected Exception
+    Stop the save operation safely
+    Report the unexpected failure
+
+  FINALLY
+    IF the file was opened AND is still open
+      Close the file
+    END IF
+    Re-enable the Save button
+    Update the status area
+
+  END TRY
+END FUNCTION
+
+
+FUNCTION Calculate 7-Day Projection
+  Disable the Projection button
+
+  TRY
+    IF no valid daily calculation exists
+      RAISE ValueError
+    END IF
+
+    Read the validated daily donated total
+    Read the validated daily given-out total
+
+    IF either total is not an integer
+      RAISE TypeError
+    END IF
+
+    IF either total is negative
+      RAISE ValueError
+    END IF
+
+    Weekly donations = daily donations * 7
+    Weekly distribution = daily distribution * 7
+    Weekly net movement = weekly donations - weekly distribution
+
+    Display the three projected weekly values
+    Display a note that the projection assumes today's activity
+    continues at the same rate for seven days
+
+  EXCEPT ValueError OR TypeError
+    Stop the projection
+    Explain why a valid estimate cannot be calculated
+
+  EXCEPT unexpected Exception
+    Stop the projection safely
+    Report the unexpected failure
+
+  FINALLY
+    Re-enable the Projection button
+    Update the status area
+
+  END TRY
+END FUNCTION
+
+
+FUNCTION Clear Form
+  Reset every category Donated input to zero
+  Reset every category Given Out input to zero
+  Clear stored daily results
+  Clear stored weekly projection results
+  Reset daily statistics display
+  Reset both percentage pie charts
+  Reset status message
+END FUNCTION
+
+Start the Tkinter event loop
+
+END PROGRAM
